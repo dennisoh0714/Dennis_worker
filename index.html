@@ -4,7 +4,19 @@
 <meta charset="UTF-8">
 <title>Cafe Dennis 근무 관리</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
+.sync-status{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;padding:5px 12px;border-radius:14px;margin-top:8px}
+.sync-status.ok{background:#E1F5EE;color:#085041}
+.sync-status.wait{background:#FFF3D9;color:#7a5a1c}
+.sync-status.off{background:#F0EFEA;color:#777}
+.sync-status.err{background:#FBE4DE;color:#8C2A1C}
+.setup-box{background:#FFF8E6;border:1px solid #F0DFB0;border-radius:10px;padding:16px 18px;margin-bottom:14px;font-size:12.5px;color:#5a4416;line-height:1.75}
+.setup-box h4{font-size:13px;font-weight:700;color:#7a5a1c;margin-bottom:8px}
+.setup-box ol{margin:6px 0 0 18px}
+.setup-box li{margin-bottom:5px}
+.setup-box code{background:#fff;border:1px solid #EADFC0;border-radius:4px;padding:1px 6px;font-family:inherit;font-size:11.5px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#222;background:#F5F4EF;padding:20px;min-height:100vh}
 .container{max-width:960px;margin:0 auto;background:#fff;padding:24px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
@@ -267,6 +279,7 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
   <div class="app-title">
     <h1>☕ Cafe Dennis 근무 관리</h1>
     <p>주간 배치 · 근무 기록 · 임금 정산을 한곳에서</p>
+    <div class="sync-status off" id="sync-status">⚪ 오프라인 모드</div>
   </div>
 
   <div class="page-tabs">
@@ -289,7 +302,19 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
     </div>
 
     <div class="note-box">
-      <strong>⚠️ 중요</strong> &nbsp;이 앱은 데이터를 브라우저 메모리에만 보관해요. <strong>새로고침하거나 창을 닫으면 입력한 내용이 모두 사라집니다.</strong> 작업이 끝나면 아래 <strong>전체 백업 파일 저장</strong>을 눌러 파일로 보관하시고, 다음에 이어서 작업할 때 <strong>백업 파일 불러오기</strong>로 복원하세요.
+      <strong>⚠️ 중요</strong> &nbsp;Firebase를 설정하면 모든 기기에서 데이터가 자동 동기화돼요. 설정 전에는 <strong>새로고침하면 입력한 내용이 사라지니</strong> 아래 JSON 백업을 이용해 주세요.
+    </div>
+
+    <div class="setup-box" id="setup-box">
+      <h4>☁️ Firebase 연결 설정 (한 번만 하면 됩니다)</h4>
+      설정하면 매장 PC·휴대폰 어디서 열어도 같은 데이터가 보이고, 자동으로 저장돼요.
+      <ol>
+        <li><code>console.firebase.google.com</code> 접속 → <b>프로젝트 추가</b></li>
+        <li>왼쪽 메뉴 <b>빌드 › Realtime Database</b> → <b>데이터베이스 만들기</b> → 위치 선택 → <b>테스트 모드로 시작</b></li>
+        <li>톱니바퀴 <b>프로젝트 설정 › 내 앱</b> → 웹 앱 <code>&lt;/&gt;</code> 추가 → 화면에 뜨는 <code>firebaseConfig</code> 값 복사</li>
+        <li>이 HTML 파일을 편집기로 열어 상단 <code>FIREBASE_CONFIG</code> 안의 값을 붙여넣고 저장 → GitHub에 다시 업로드</li>
+      </ol>
+      <div style="margin-top:8px;font-size:11.5px;color:#8a7040">※ 테스트 모드 보안 규칙은 30일 후 만료돼요. 계속 쓰시려면 그 전에 규칙을 조정해야 하는데, 필요하실 때 도와드릴게요.</div>
     </div>
 
     <div class="backup-grid">
@@ -419,7 +444,8 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
     </div>
 
     <div class="tip-bar">
-      💡 <strong>시간대 입력</strong> &nbsp;<code>10-14</code> 오전 · <code>14-18</code> 오후 · <code>10-18</code> 풀타임 · <code>10:30-15:30</code> 분 단위 · 숫자만 입력 시 시간수로 인식 (예: <code>7</code>)
+      💡 <strong>시간대 입력</strong> &nbsp;<code>10-14</code> 오전 · <code>14-18</code> 오후 · <code>10-18</code> 풀타임 · 숫자만 입력 시 시간수로 인식 (예: <code>7</code>)<br>
+      ⌨️ <strong>빠른 입력</strong> &nbsp;숫자 입력 후 <code>Enter</code> 또는 <code>↓</code> → 아래 칸 · <code>Shift+Enter</code> / <code>↑</code> → 위 칸 · <code>←</code> <code>→</code> → 옆 근무자
     </div>
 
     <div id="record-body"></div>
@@ -932,6 +958,34 @@ function saveShift(wid,sy,sm,sIdx,val,rowKey){
 }
 function saveNote(sy,sm,sIdx,val){getNotes(sy,sm)[sIdx]=val}
 
+/* 키보드 이동: Enter/↓ 아래, Shift+Enter/↑ 위, ←→ 좌우 근무자 */
+function focusShift(wid,ri){
+  const el=document.querySelector('.shift-in[data-wid="'+wid+'"][data-ri="'+ri+'"]');
+  if(el){el.focus();el.select();return true}
+  return false;
+}
+function onShiftKey(e,wid,ri){
+  const k=e.key;
+  if(k==='Enter'||k==='ArrowDown'||k==='ArrowUp'){
+    e.preventDefault();
+    const up=(k==='ArrowUp')||(k==='Enter'&&e.shiftKey);
+    const next=up?ri-1:ri+1;
+    if(!focusShift(wid,next)&&!up){
+      // 마지막 행이면 다음 근무자 첫 행으로
+      const i=roster.findIndex(w=>w.id===wid);
+      if(i>=0&&i<roster.length-1)focusShift(roster[i+1].id,0);
+      else e.target.blur();
+    }
+    return;
+  }
+  if((k==='ArrowLeft'||k==='ArrowRight')&&e.target.selectionStart===e.target.selectionEnd&&
+     ((k==='ArrowLeft'&&e.target.selectionStart===0)||(k==='ArrowRight'&&e.target.selectionStart===e.target.value.length))){
+    const i=roster.findIndex(w=>w.id===wid);
+    const j=k==='ArrowLeft'?i-1:i+1;
+    if(j>=0&&j<roster.length){e.preventDefault();focusShift(roster[j].id,ri)}
+  }
+}
+
 function renderTable(){
   const wrap=document.getElementById('record-body');
   if(!roster.length){
@@ -956,7 +1010,7 @@ function renderTable(){
   head2+='</tr>';
 
   let body='';
-  periodRows.forEach(r=>{
+  periodRows.forEach((r,ri)=>{
     const rowKey=r.srcY+'_'+r.srcM+'_'+r.srcIdx;
     const cls=[];
     if(r.isWknd)cls.push('weekend');
@@ -976,8 +1030,8 @@ function renderTable(){
         else txt=h%1===0?h.toFixed(0):h.toFixed(1);
       }
       const bg=tint(w.color,'0d');
-      tds+='<td style="background:'+bg+'"><input class="input-cell" type="text" placeholder="10-18" value="'+esc(val)+
-           '" oninput="saveShift(\''+w.id+'\','+r.srcY+','+r.srcM+','+r.srcIdx+',this.value,\''+rowKey+'\')"></td>'+
+      tds+='<td style="background:'+bg+'"><input class="input-cell shift-in" data-wid="'+w.id+'" data-ri="'+ri+'" type="text" placeholder="10-18" value="'+esc(val)+
+           '" onkeydown="onShiftKey(event,\''+w.id+'\','+ri+')" oninput="saveShift(\''+w.id+'\','+r.srcY+','+r.srcM+','+r.srcIdx+',this.value,\''+rowKey+'\')"></td>'+
            '<td class="'+hcls+'" id="hr-'+w.id+'-'+rowKey+'" style="background:'+bg+'">'+txt+'</td>';
     });
     tds+='<td><input class="input-cell note-input" type="text" value="'+esc(getNotes(r.srcY,r.srcM)[r.srcIdx])+
@@ -1564,6 +1618,110 @@ function printAllData(){
   bkMsg('✅ 인쇄 창을 열었어요. 팝업이 차단된 경우 HTML 파일로 저장됩니다.');
 }
 
+/* ============ Firebase 실시간 동기화 ============ */
+/* ▼▼▼ 아래 값을 Firebase 콘솔에서 복사한 값으로 교체하세요 ▼▼▼ */
+const FIREBASE_CONFIG={
+  apiKey:            "AIzaSyCRZYByNqdSyzUmcdszk2shhh_qO3YMwlo",
+  authDomain:        "dennisworker-f59bc.firebaseapp.com",
+  databaseURL:       "https://dennisworker-f59bc-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "dennisworker-f59bc",
+  storageBucket:     "dennisworker-f59bc.firebasestorage.app",
+  messagingSenderId: "158437666641",
+  appId:             "1:158437666641:web:e8999817a3d9b6bc206d70"
+};
+const DB_PATH='cafeDennis/schedule';
+/* ▲▲▲ 여기까지 ▲▲▲ */
+
+const CLIENT_ID=Math.random().toString(36).slice(2,10);
+let dbRef=null,cloudOn=false,lastSig='',applyingRemote=false,pendingRemote=null;
+
+function isConfigured(){
+  return FIREBASE_CONFIG.databaseURL&&FIREBASE_CONFIG.databaseURL.indexOf('여기에')<0&&
+         FIREBASE_CONFIG.apiKey.indexOf('여기에')<0;
+}
+function setSync(txt,cls){
+  const el=document.getElementById('sync-status');
+  if(el){el.textContent=txt;el.className='sync-status '+cls}
+}
+function isEditing(){
+  const a=document.activeElement;
+  return a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA');
+}
+function stateSignature(){
+  return JSON.stringify({r:roster,w:weekAssign,ws:weekStart,h:hoursPerDay,
+    b:document.getElementById('base-wage').value,d:monthData,n:monthNotes});
+}
+function applyState(d){
+  applyingRemote=true;
+  try{
+    if(Array.isArray(d.roster)){
+      roster=d.roster.map(w=>({id:w.id||newId(),name:w.name||'이름없음',color:w.color||'#6661D0',
+        allowance:!!w.allowance,wage:w.wage==null?'':String(w.wage)}));
+    }
+    if(typeof d.seq==='number')seq=Math.max(seq,d.seq);
+    Object.keys(monthData).forEach(k=>delete monthData[k]);
+    Object.keys(monthNotes).forEach(k=>delete monthNotes[k]);
+    if(d.monthData)Object.keys(d.monthData).forEach(k=>{monthData[k]=d.monthData[k]});
+    if(d.monthNotes)Object.keys(d.monthNotes).forEach(k=>{monthNotes[k]=d.monthNotes[k]});
+    if(d.weekAssign)WEEK_DAYS.forEach(day=>{
+      weekAssign[day.k]=Array.isArray(d.weekAssign[day.k])?d.weekAssign[day.k]:[];
+    });
+    if(d.weekStart)weekStart=d.weekStart;
+    if(d.hoursPerDay)hoursPerDay=parseFloat(d.hoursPerDay)||8;
+    if(d.baseWage)document.getElementById('base-wage').value=d.baseWage;
+    refreshAll();
+  }catch(e){}
+  lastSig=stateSignature();
+  applyingRemote=false;
+}
+function pushCloud(){
+  if(!cloudOn||!dbRef)return;
+  dbRef.set({payload:JSON.stringify(collectState()),updatedBy:CLIENT_ID,at:Date.now()})
+    .then(()=>setSync('☁ 저장됨 · 모든 기기 동기화','ok'))
+    .catch(e=>setSync('⚠ 저장 실패: '+e.message,'err'));
+}
+function tickSync(){
+  if(!cloudOn)return;
+  if(pendingRemote&&!isEditing()){
+    const d=pendingRemote;pendingRemote=null;
+    applyState(d);setSync('☁ 다른 기기의 변경을 반영했어요','ok');
+    return;
+  }
+  if(applyingRemote||isEditing())return;
+  const sig=stateSignature();
+  if(sig!==lastSig){lastSig=sig;pushCloud()}
+}
+function initCloud(){
+  const box=document.getElementById('setup-box');
+  if(!isConfigured()){
+    setSync('⚪ 오프라인 모드 · 새로고침 시 데이터 사라짐 (백업 탭 참고)','off');
+    return;
+  }
+  if(typeof firebase==='undefined'){
+    setSync('⚠ Firebase 로드 실패 · 오프라인 모드','err');
+    return;
+  }
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    dbRef=firebase.database().ref(DB_PATH);
+    cloudOn=true;
+    if(box)box.style.display='none';
+    setSync('⏳ 연결 중…','wait');
+    dbRef.on('value',snap=>{
+      const v=snap.val();
+      if(!v||!v.payload){lastSig=stateSignature();pushCloud();return}
+      if(v.updatedBy===CLIENT_ID){setSync('☁ 저장됨 · 모든 기기 동기화','ok');return}
+      let d;try{d=JSON.parse(v.payload)}catch(e){return}
+      if(isEditing()){pendingRemote=d;setSync('☁ 다른 기기의 변경 대기 중…','wait');return}
+      applyState(d);
+      setSync('☁ 동기화됨 · '+new Date(v.at||Date.now()).toLocaleTimeString('ko-KR'),'ok');
+    },err=>{cloudOn=false;setSync('⚠ 연결 오류: '+err.message,'err')});
+    setInterval(tickSync,2000);
+  }catch(e){
+    setSync('⚠ 초기화 실패 · 오프라인 모드','err');
+  }
+}
+
 /* ============ 페이지 전환 ============ */
 function switchPage(name){
   ['week','record','payroll','roster','backup'].forEach(p=>{
@@ -1582,6 +1740,7 @@ updateMonthDisplay();
 renderTable();
 renderPayCards();
 updatePayroll();
+initCloud();
 </script>
 </body>
 </html>
