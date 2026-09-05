@@ -179,6 +179,12 @@ tr.sun td.day-cell{color:#D54A3A;font-weight:600}
 tr.today td{background:#FAF6E8 !important}
 tr.today td:first-child{box-shadow:inset 3px 0 0 #BA7517}
 tr.month-divider td{border-top:2px solid #C9C7BE !important}
+tr.holiday td{background:#FDF0EC}
+tr.holiday td.date-cell,tr.holiday td.day-cell{color:#C0392B;font-weight:600}
+.hol-tag{display:block;font-size:8.5px;font-weight:600;color:#C0392B;line-height:1.1;margin-top:1px;white-space:nowrap;overflow:hidden}
+.day.hol .dhead{background:#FDF0EC}
+.day.hol .dhead .ko{color:#C0392B}
+.dhead .hol-name{display:block;font-size:8px;color:#C0392B;font-weight:600;line-height:1.1;margin-top:1px}
 td.date-cell{font-variant-numeric:tabular-nums;color:#222}
 td.day-cell{font-size:13px;color:#666}
 td.hr-cell{font-size:12px;color:#555;font-variant-numeric:tabular-nums}
@@ -513,6 +519,28 @@ const DAYS=['일','월','화','수','목','금','토'];
 const MONTHS=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 const PALETTE=['#6661D0','#2BA37E','#C77332','#B6552F','#3A7BD5','#8A5A6D','#5F7A4D','#A0507A','#2E7D8F','#9A6F2E'];
 
+/* 대한민국 공휴일 (한국천문연구원 월력요항 기준) */
+const HOLIDAYS={
+  '2026-1-1':'신정',
+  '2026-2-16':'설날 연휴','2026-2-17':'설날','2026-2-18':'설날 연휴',
+  '2026-3-1':'삼일절','2026-3-2':'삼일절 대체',
+  '2026-5-5':'어린이날','2026-5-24':'부처님오신날','2026-5-25':'부처님오신날 대체',
+  '2026-6-3':'지방선거','2026-6-6':'현충일',
+  '2026-8-15':'광복절','2026-8-17':'광복절 대체',
+  '2026-9-24':'추석 연휴','2026-9-25':'추석','2026-9-26':'추석 연휴',
+  '2026-10-3':'개천절','2026-10-5':'개천절 대체','2026-10-9':'한글날',
+  '2026-12-25':'성탄절',
+  '2027-1-1':'신정',
+  '2027-2-6':'설날 연휴','2027-2-7':'설날','2027-2-8':'설날 연휴','2027-2-9':'설날 대체',
+  '2027-3-1':'삼일절','2027-5-5':'어린이날','2027-5-13':'부처님오신날',
+  '2027-6-6':'현충일','2027-6-7':'현충일 대체',
+  '2027-8-15':'광복절','2027-8-16':'광복절 대체',
+  '2027-9-14':'추석 연휴','2027-9-15':'추석','2027-9-16':'추석 연휴',
+  '2027-10-3':'개천절','2027-10-4':'개천절 대체','2027-10-9':'한글날','2027-10-11':'한글날 대체',
+  '2027-12-25':'성탄절'
+};
+function holidayName(y,m,d){return HOLIDAYS[y+'-'+(m+1)+'-'+d]||null}
+
 const today=new Date();
 const todayY=today.getFullYear(),todayM=today.getMonth(),todayD=today.getDate();
 
@@ -659,11 +687,14 @@ function renderWeek(){
     const assigns=weekAssign[d.k];
     const empty=assigns.length===0;
     const card=document.createElement('div');
-    card.className='day '+d.cls+(empty?' empty':'')+(wkIsToday(i)?' today':'');
+    const wd=wkDateObj(i);
+    const hol=wd?holidayName(wd.getFullYear(),wd.getMonth(),wd.getDate()):null;
+    card.className='day '+d.cls+(empty?' empty':'')+(wkIsToday(i)?' today':'')+(hol?' hol':'');
     card.dataset.day=d.k;
     const head=document.createElement('div');
     head.className='dhead';
     head.innerHTML='<span class="ko">'+d.ko+'</span><span class="dt">'+wkDateFor(i)+'</span>'+
+      (hol?'<span class="hol-name">'+esc(hol)+'</span>':'')+
       '<span class="cb '+(empty?'zero':'')+'">'+assigns.length+'명</span>';
     card.appendChild(head);
     const body=document.createElement('div');
@@ -1016,10 +1047,12 @@ function renderTable(){
     if(r.isWknd)cls.push('weekend');
     if(r.dow===6)cls.push('sat');
     if(r.dow===0)cls.push('sun');
+    const hol=holidayName(r.srcY,r.srcM,r.date);
+    if(hol)cls.push('holiday');
     if(r.srcY===todayY&&r.srcM===todayM&&r.date===todayD)cls.push('today');
     if(r.monthChange)cls.push('month-divider');
     let tds='<td class="date-cell"><div class="cell-pad">'+(r.srcM+1)+'/'+r.date+'</div></td>'+
-            '<td class="day-cell">'+r.dayStr+'</td>';
+            '<td class="day-cell">'+r.dayStr+(hol?'<span class="hol-tag" title="'+hol+'">'+esc(hol.length>4?hol.slice(0,3)+'…':hol)+'</span>':'')+'</td>';
     roster.forEach(w=>{
       const arr=getShiftArr(r.srcY,r.srcM,w.id);
       const val=arr[r.srcIdx].shift;
@@ -1110,11 +1143,12 @@ function blankSheetHTML(){
   const heads=roster.map(w=>'<th colspan="2">'+esc(w.name)+'</th>').join('');
   const subs=roster.map(()=>'<th class="sub">근무 총 시간</th><th class="sub">확인 (사인)</th>').join('');
   const rows=periodRows.map(r=>{
-    const dayColor=r.dow===0?'color:#A8071A;':r.dow===6?'color:#0050B3;':'';
-    const bg=r.isWknd?'background:#F5F5F0;':'';
+    const hol=holidayName(r.srcY,r.srcM,r.date);
+    const dayColor=(hol||r.dow===0)?'color:#A8071A;':r.dow===6?'color:#0050B3;':'';
+    const bg=hol?'background:#FBEFEC;':r.isWknd?'background:#F5F5F0;':'';
     const cells=roster.map(()=>'<td style="'+bg+'"></td><td style="'+bg+'"></td>').join('');
     return '<tr><td class="dt" style="'+bg+'">'+(r.srcM+1)+'/'+r.date+'</td>'+
-      '<td class="dt" style="'+bg+dayColor+'">'+r.dayStr+'</td>'+cells+'</tr>';
+      '<td class="dt" style="'+bg+dayColor+'">'+r.dayStr+(hol?'<div style="font-size:6.5pt">'+hol+'</div>':'')+'</td>'+cells+'</tr>';
   }).join('');
   const totCells=roster.map(()=>'<td></td><td></td>').join('');
   return '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>Cafe Dennis 수기 근무 기록지</title>'+
