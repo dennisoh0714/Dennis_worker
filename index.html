@@ -342,6 +342,31 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
 }
 @media print{.quick-assign,.day-add,.toast,.local-status,.conflict,.scroll-hint{display:none!important}}
 
+
+/* Monthly calendar and date editor */
+.record-view-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:16px 0 12px}
+.record-view-bar .active{background:#203a31;color:#fff;border-color:#203a31}
+.record-view-bar label{margin-left:auto;font-size:12px;color:#596760}
+.record-view-bar select{font:inherit;font-size:16px;padding:10px;border:1px solid #ccd8d0;border-radius:9px;max-width:190px;background:white;min-height:44px}
+.calendar-help{font-size:12px;color:#596760;line-height:1.7;margin-bottom:12px}
+.calendar-weekdays,.month-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.calendar-weekdays span{text-align:center;font-size:12px;padding:8px 0;color:#596760}
+.calendar-weekdays span:first-child{color:#b14b42}.calendar-weekdays span:last-child{color:#41679d}
+.calendar-date{min-width:0;min-height:104px;border:1px solid #dce4df;border-radius:10px;background:#fff;color:#203a31;padding:9px 4px;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;gap:5px}
+.calendar-date:hover{background:#f0f6f1;border-color:#729b80}.calendar-date:focus-visible{outline:3px solid #367b62;outline-offset:1px}
+.calendar-date.outside{background:#f4f5f3;color:#69746c}.calendar-date.today{box-shadow:inset 0 0 0 2px #347854}.calendar-date.invalid{border-color:#bd4430}
+.calendar-date .date-number{font-size:15px;font-weight:700}.calendar-date .calendar-hours{font-size:13px;font-weight:700}.calendar-date small{font-size:10px;color:#69746c}.calendar-date.holiday .date-number,.calendar-date.sun .date-number{color:#b14b42}.calendar-date.sat .date-number{color:#41679d}
+.calendar-dots{display:flex;justify-content:center;gap:3px;flex-wrap:wrap}.calendar-dots i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.calendar-spacer{min-height:50px}.calendar-summary{padding:12px;background:#f5f7f4;border-radius:10px;margin-top:12px;font-size:12px;color:#46574b}
+#record-calendar[hidden],#record-table-section[hidden]{display:none}
+.date-editor{border:0;border-radius:20px;padding:0;width:min(540px,calc(100% - 24px));max-height:calc(100dvh - 24px);color:#203a31;box-shadow:0 24px 70px #0003}
+.date-editor::backdrop{background:#10271dcc}.date-editor form{padding:20px}.editor-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.editor-head h3{font-size:20px}.editor-period{font-size:12px;color:#68746d;margin:8px 0 16px}
+.date-worker{border:1px solid #dce4df;border-radius:12px;padding:12px;margin-bottom:12px}.date-worker label{display:block;font-size:14px;font-weight:700;margin-bottom:8px}.date-worker input,.date-note{width:100%;min-height:46px;border:1px solid #c5d3ca;border-radius:8px;padding:10px;font:inherit;font-size:16px;background:#fff}.date-worker input[aria-invalid=true]{border:2px solid #b13f2a}
+.shift-presets{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.shift-presets button{font:inherit;font-size:12px;padding:8px 2px;min-height:40px;border:1px solid #dce4df;border-radius:8px;background:#f5f7f4;color:#203a31;cursor:pointer}
+.editor-note-label{font-size:13px;display:block;margin:12px 0 6px}.editor-error{color:#ad3826;font-size:13px;min-height:20px;margin:8px 0}.editor-actions{position:sticky;bottom:0;background:#fff;display:flex;gap:8px;padding:12px 0 0}.editor-actions .btn{flex:1}
+@media(max-width:760px){.calendar-date{min-height:85px;padding:7px 1px;border-radius:8px;gap:4px}.calendar-date .date-number{font-size:13px}.calendar-date .calendar-hours{font-size:11px}.calendar-date small{font-size:9px}.calendar-weekdays,.month-calendar{gap:3px}.record-view-bar label{margin-left:0}.record-view-bar select{max-width:140px}.date-editor form{padding:16px}}
+@media print{.record-view-bar,#record-calendar,.date-editor{display:none!important}#record-table-section[hidden]{display:block!important}}
+
 </style>
 </head>
 <body>
@@ -357,7 +382,7 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
   <div id="sync-conflict" class="conflict" hidden><p>다른 기기의 기록과 이 기기의 수정 내용이 겹쳤습니다. 내용을 선택하기 전에 현재 기록을 백업할 수 있습니다.</p><div class="actions"><button class="btn" onclick="exportBackup()">현재 내용 백업</button><button class="btn" onclick="resolveConflict(false)">다른 기기 내용 불러오기</button><button class="btn btn-pri" onclick="resolveConflict(true)">이 기기 내용 유지</button></div></div>
   <nav class="page-tabs" aria-label="근무 관리 메뉴">
     <button class="page-tab active" id="tab-week" onclick="switchPage('week')">📅 주간 근무표</button>
-    <button class="page-tab" id="tab-record" onclick="switchPage('record')">📋 근무 기록표</button>
+    <button class="page-tab" id="tab-record" onclick="switchPage('record')">📋 월 근무 기록</button>
     <button class="page-tab" id="tab-payroll" onclick="switchPage('payroll')">💰 임금 계산서</button>
     <button class="page-tab" id="tab-roster" onclick="switchPage('roster')">👥 근무자 관리</button>
     <button class="page-tab" id="tab-backup" onclick="switchPage('backup')">💾 백업</button>
@@ -489,7 +514,7 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
     <div class="header">
       <div class="title-row">
         <div class="title-block">
-          <h2>근무 기록표</h2>
+          <h2>월 근무 기록</h2>
           <div class="month"><strong id="record-month-label"></strong> <span id="record-period-label" style="color:#888;font-weight:400"></span></div>
           <div class="hours-info">
             <span><i class="dot dot-op"></i>영업 10:00 – 18:00</span>
@@ -507,12 +532,20 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
       </div>
     </div>
 
+    <div class="record-view-bar" aria-label="근무 기록 보기">
+      <button class="btn active" id="view-calendar" aria-pressed="true" onclick="setRecordView('calendar')">달력 보기</button>
+      <button class="btn" id="view-table" aria-pressed="false" onclick="setRecordView('table')">표 보기</button>
+      <label for="calendar-worker">근무자</label><select id="calendar-worker" onchange="renderCalendar()"><option value="">전체 직원</option></select>
+    </div>
+    <div id="record-calendar"></div>
+    <div id="record-table-section" hidden>
     <div class="tip-bar">
       💡 <strong>시간대 입력</strong> &nbsp;<code>10-14</code> 오전 · <code>14-18</code> 오후 · <code>10-18</code> 풀타임 · 숫자만 입력 시 시간수로 인식 (예: <code>7</code>)<br>
       ⌨️ <strong>빠른 입력</strong> &nbsp;숫자 입력 후 <code>Enter</code> 또는 <code>↓</code> → 아래 칸 · <code>Shift+Enter</code> / <code>↑</code> → 위 칸 · <code>←</code> <code>→</code> → 옆 근무자
     </div>
 
     <div id="record-body"></div>
+    </div>
     <div class="summary" id="summary"></div>
   </div>
 
@@ -569,6 +602,17 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
   </div>
 </main>
 
+<dialog id="date-editor" class="date-editor" aria-labelledby="editor-title">
+  <form id="date-editor-form" onsubmit="event.preventDefault();saveCalendarDate()">
+    <div class="editor-head"><h3 id="editor-title"></h3><button class="btn" type="button" aria-label="닫기" onclick="closeDateEditor()">닫기</button></div>
+    <p class="editor-period" id="editor-period"></p>
+    <p class="calendar-help">시간대를 입력하거나 아래 버튼을 누르세요. 숫자만 입력할 수도 있어요(예: 7.5). ‘휴무’는 기록을 비웁니다.</p>
+    <div id="date-workers"></div>
+    <label class="editor-note-label" for="date-note">이 날짜의 공통 메모</label><input id="date-note" class="date-note" placeholder="대타, 조기 퇴근 등">
+    <p class="editor-error" id="editor-error" role="alert"></p>
+    <div class="editor-actions"><button type="button" class="btn" onclick="closeDateEditor()">취소</button><button type="submit" class="btn btn-pri">저장</button></div>
+  </form>
+</dialog>
 <div id="ghost"></div>
 
 <script>
@@ -1055,6 +1099,7 @@ function saveShift(wid,sy,sm,sIdx,val,rowKey){
     else{cell.textContent=h%1===0?h.toFixed(0):h.toFixed(1);cell.className='hr-cell'}
   }
   updateSummary();
+  renderCalendar();
 }
 function saveNote(sy,sm,sIdx,val){getNotes(sy,sm)[sIdx]=val}
 
@@ -1087,6 +1132,7 @@ function onShiftKey(e,wid,ri){
 }
 
 function renderTable(){
+  renderCalendar();
   const wrap=document.getElementById('record-body');
   if(!roster.length){
     wrap.innerHTML='<div class="empty-msg">등록된 근무자가 없어요.<br><strong>👥 근무자 관리</strong> 탭에서 근무자를 추가해 주세요.</div>';
@@ -1736,7 +1782,7 @@ function setSync(txt,cls){
 }
 function isEditing(){
   const a=document.activeElement;
-  return a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA');
+  return document.getElementById('date-editor').open||(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'));
 }
 function stateSignature(){
   return JSON.stringify({r:roster,w:weekAssign,ws:weekStart,h:hoursPerDay,
@@ -1895,6 +1941,89 @@ function switchPage(name){
   document.querySelectorAll('.page-tab').forEach(t=>{if(t.id==='tab-'+name)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current')});
   document.getElementById('tab-'+name).scrollIntoView({block:'nearest',inline:'nearest'});
 }
+
+
+/* Calendar dates write to the same monthly records used by payroll/export. */
+let recordView='calendar',editingDate=null,editorSnapshot='',editorOpener=null;
+function setRecordView(view){
+  recordView=view;
+  document.getElementById('record-calendar').hidden=view!=='calendar';
+  document.getElementById('record-table-section').hidden=view!=='table';
+  ['calendar','table'].forEach(v=>{const b=document.getElementById('view-'+v);b.classList.toggle('active',v===view);b.setAttribute('aria-pressed',String(v===view))});
+  document.getElementById('calendar-worker').disabled=view!=='calendar';
+  if(view==='calendar')renderCalendar();
+}
+function readCalendarShift(y,m,day,id){return monthData[getMonthKey(y,m)]?.[id]?.[day-1]?.shift||''}
+function renderCalendar(){
+  const root=document.getElementById('record-calendar');
+  if(!root)return;
+  const picker=document.getElementById('calendar-worker'),chosen=picker.value;
+  picker.replaceChildren(new Option('전체 직원',''),...roster.map(w=>new Option(w.name,w.id)));
+  if(roster.some(w=>w.id===chosen))picker.value=chosen;
+  const selected=picker.value;
+  const workers=selected?roster.filter(w=>w.id===selected):roster;
+  const first=new Date(curYear,curMonth,1).getDay(),days=new Date(curYear,curMonth+1,0).getDate();
+  const count=Math.ceil((first+days+5)/7)*7;
+  const next=getNextMonth(curYear,curMonth);
+  let html='<p class="calendar-help">날짜를 누르면 근무시간을 입력할 수 있어요. <strong>정산은 이번 달 6일~다음 달 5일</strong>입니다. 이번 달 1~5일은 이전 정산에 포함됩니다.</p>';
+  html+='<div class="calendar-weekdays" aria-hidden="true">'+DAYS.map(d=>'<span>'+d+'</span>').join('')+'</div><div class="month-calendar" aria-label="'+curYear+'년 '+(curMonth+1)+'월 근무 달력">';
+  let monthHours=0,monthEntries=0;
+  for(let i=0;i<count;i++){
+    const n=i-first+1;
+    if(n<1||n>days+5){html+='<div class="calendar-spacer" aria-hidden="true"></div>';continue}
+    const y=n>days?next.y:curYear,m=n>days?next.m:curMonth,d=n>days?n-days:n;
+    const entries=workers.map(w=>({w,value:readCalendarShift(y,m,d,w.id)})).filter(e=>e.value.trim());
+    const invalid=entries.some(e=>isNaN(parseShift(e.value)));
+    const hours=entries.reduce((sum,e)=>sum+(parseShift(e.value)||0),0);
+    if(n<=days){monthHours+=hours;monthEntries+=entries.length}
+    const hol=holidayName(y,m,d),today=y===todayY&&m===todayM&&d===todayD;
+    const cls=['calendar-date',n>days||d<6?'outside':'',today?'today':'',i%7===0?'sun':i%7===6?'sat':'',hol?'holiday':'',invalid?'invalid':''].join(' ');
+    const label=(m+1)+'월 '+d+'일 '+DAYS[i%7]+'요일'+(hol?' '+hol:'')+' · '+(invalid?'입력 오류':entries.length?entries.length+'명 '+Math.round(hours*10)/10+'시간':'근무 기록 없음');
+    html+='<button type="button" class="'+cls+'" data-calendar-date="'+y+'-'+(m+1)+'-'+d+'" aria-label="'+esc(label)+'" onclick="openDateEditor('+y+','+m+','+d+',this)"><span class="date-number">'+(n>days?(m+1)+'/':'')+d+'</span>'+
+      '<span class="calendar-hours">'+(invalid?'확인':entries.length?(Math.round(hours*10)/10)+'h':'+')+'</span>'+
+      '<span class="calendar-dots" aria-hidden="true">'+entries.map(e=>'<i style="background:'+e.w.color+'"></i>').join('')+'</span>'+
+      '<small>'+(n>days?'다음 달':d<6?'이전 정산':entries.length?entries.length+'명':'입력')+'</small></button>';
+  }
+  html+='</div><div class="calendar-summary">'+(selected?esc(workers[0].name):'전체 직원')+' · '+(curMonth+1)+'월 1일~말일: '+monthEntries+'건 / '+Math.round(monthHours*10)/10+'시간<br>아래 직원별 합계와 임금 계산서는 6일~다음 달 5일 정산 기준입니다.</div>';
+  root.innerHTML=html;
+}
+function editorValues(){return JSON.stringify([...document.querySelectorAll('.date-shift')].map(e=>[e.dataset.worker,e.value]).concat([['note',document.getElementById('date-note').value]]))}
+function openDateEditor(y,m,day,opener){
+  if(!roster.length){notifyUser('근무자 관리에서 직원을 먼저 추가해 주세요.');return}
+  editingDate={y,m,day};editorOpener=opener;
+  const date=new Date(y,m,day);
+  document.getElementById('editor-title').textContent=(m+1)+'월 '+day+'일 '+DAYS[date.getDay()]+'요일';
+  const period=day>=6?{y,m}:m===0?{y:y-1,m:11}:{y,m:m-1};
+  document.getElementById('editor-period').textContent=period.y+'년 '+(period.m+1)+'월 정산에 반영됩니다.';
+  const filter=document.getElementById('calendar-worker').value;
+  const workers=filter?roster.filter(w=>w.id===filter):roster;
+  document.getElementById('date-workers').innerHTML=workers.map(w=>'<div class="date-worker"><label for="date-shift-'+w.id+'">'+esc(w.name)+'</label><input type="text" autocomplete="off" spellcheck="false" id="date-shift-'+w.id+'" class="date-shift" data-worker="'+w.id+'" value="'+esc(readCalendarShift(y,m,day,w.id))+'" placeholder="예: 10:30-18:00" aria-invalid="false"><div class="shift-presets">'+[['종일','10-18'],['오전','10-14'],['오후','14-18'],['휴무','']].map(([name,value])=>'<button type="button" data-preset="'+value+'">'+name+'</button>').join('')+'</div></div>').join('');
+  document.querySelectorAll('.shift-presets button').forEach(b=>b.onclick=()=>{const input=b.closest('.date-worker').querySelector('input');input.value=b.dataset.preset;input.setAttribute('aria-invalid','false')});
+  document.getElementById('date-note').value=monthNotes[getMonthKey(y,m)]?.[day-1]||'';
+  document.getElementById('editor-error').textContent='';editorSnapshot=editorValues();
+  document.getElementById('date-editor').showModal();
+}
+function closeDateEditor(){
+  if(editorSnapshot!==editorValues()&&!confirm('수정한 내용을 저장하지 않고 닫을까요?'))return;
+  document.getElementById('date-editor').close();editingDate=null;
+  if(editorOpener?.isConnected)editorOpener.focus();
+}
+function saveCalendarDate(){
+  if(!editingDate)return;
+  const inputs=[...document.querySelectorAll('.date-shift')];
+  const invalid=inputs.find(input=>input.value.trim()&&isNaN(parseShift(input.value)));
+  if(invalid){invalid.setAttribute('aria-invalid','true');document.getElementById('editor-error').textContent='근무시간을 확인해 주세요. 예: 10:30-18:00 또는 7.5';invalid.focus();return}
+  const {y,m,day}=editingDate;
+  inputs.forEach(input=>{const value=input.value.trim();if(value!==readCalendarShift(y,m,day,input.dataset.worker))getShiftArr(y,m,input.dataset.worker)[day-1].shift=value});
+  const note=document.getElementById('date-note').value;
+  if(note!==(monthNotes[getMonthKey(y,m)]?.[day-1]||''))getNotes(y,m)[day-1]=note;
+  document.getElementById('date-editor').close();editingDate=null;
+  renderTable();updatePayroll();persistLocal();
+  document.querySelector('[data-calendar-date="'+y+'-'+(m+1)+'-'+day+'"]')?.focus();
+  notifyUser('근무 기록을 저장했어요.');
+}
+document.getElementById('date-editor').addEventListener('cancel',e=>{e.preventDefault();closeDateEditor()});
+window.addEventListener('beforeprint',()=>{renderTable();renderPayCards();updatePayroll()});
 
 /* 초기화 */
 renderRoster();
