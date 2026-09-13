@@ -2,6 +2,8 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#243d34">
 <title>Cafe Dennis 근무 관리</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -278,23 +280,88 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
   .payroll-total{background:#333 !important;color:#fff !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:12pt 16pt;page-break-inside:avoid}
   .payroll-total .amt{font-size:16pt}
 }
+
+/* Responsive workspace — screen styles leave printable records intact. */
+@media screen {
+  :root{--ink:#203a31;--muted:#596760;--line:#dce4df;--surface:#f3f6f3}
+  body{background:var(--surface);color:#24312b;padding:28px 20px;line-height:1.5}
+  .container{max-width:1180px;padding:28px;border:1px solid var(--line);border-radius:22px;box-shadow:0 14px 48px #203a3108}
+  .app-title{text-align:left;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+  .app-title h1{font-size:26px;color:var(--ink);letter-spacing:-1px}
+  .app-title p{font-size:13px;color:var(--muted);margin-top:7px}
+  .page-tabs{position:sticky;top:0;z-index:30;gap:6px;flex-wrap:nowrap;background:#fff;padding:10px 0;margin-bottom:24px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:thin}
+  .page-tab{flex:1;white-space:nowrap;border:0;margin:0;border-radius:10px;padding:12px;color:#5b675f;min-height:46px}
+  .page-tab.active{background:var(--ink);color:#fff;border:0;font-weight:700}
+  .title-block h2{font-size:21px;letter-spacing:-.6px}
+  .btn,.nav-btn,.nav-today,.del-btn{min-height:44px;border-color:var(--line);border-radius:10px}
+  .btn-pri{background:var(--ink);border-color:var(--ink)}
+  .btn-pri:hover{background:#315747;border-color:#315747}
+  .nav-btn,.del-btn{min-width:44px}
+  button:focus-visible,[role=button]:focus-visible,select:focus-visible{outline:3px solid #367b62;outline-offset:3px}
+  input,select{accent-color:#315747}
+  .hours-info,.bk-desc,.worker-stat,.tray-title,.tray-hint,.stat-label,.pay-field label{color:var(--muted)}
+  .week-ctl,.tray,.wk-summary,.month-nav,.payroll-controls,.bk-summary,.add-row{background:#f5f7f4;border:1px solid var(--line);border-radius:14px}
+  .week-ctl{justify-content:flex-start;gap:10px}
+  .daygrid{gap:8px}.day{border-color:var(--line);border-radius:12px}.day.today{border-color:#387b61;box-shadow:inset 0 0 0 1px #387b61}
+  .day.empty{border-style:dashed;border-color:#c8d3cc}.dbody{padding:9px;min-height:160px;gap:10px}.dhead{padding:12px 4px}
+  .dhead .dt{font-size:12px;color:#657168}.dhead .cb{font-size:11px}.dempty{font-size:12px;color:#687970!important}
+  .pin{font-size:13px;min-height:58px;padding:10px 25px 9px 7px;border-radius:9px}.pin .sb{font-size:11px;padding:4px}.pin .x{top:1px;right:1px;width:24px;height:24px;font-size:16px}
+  .worker{min-height:64px;touch-action:pan-y}.pin{touch-action:pan-y}
+  .day-add{margin:0 8px 8px;min-height:40px;background:#f5f7f4;border:1px dashed #c4d1c8;border-radius:8px;color:#345b47;font:inherit;font-size:12px;cursor:pointer}
+  .quick-assign{display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:12px;align-items:end;padding:16px;border:1px solid var(--line);border-radius:14px;margin-bottom:16px;background:#fff}
+  .quick-assign label{display:grid;gap:5px;font-size:12px;color:var(--muted)}
+  .quick-assign select{width:100%;min-width:0;min-height:44px;background:#fff;border:1px solid #ccd8d0;border-radius:9px;padding:8px;font:inherit;color:#243a2c;font-size:14px}
+  .sheet{max-width:100%;overscroll-behavior-x:contain;border-radius:12px}
+  .sheet td:first-child{position:sticky;left:0;z-index:2;background:#f4f7f3;box-shadow:1px 0 #dce4df}
+  .input-cell{height:44px}.sheet td{height:44px}.input-cell[aria-invalid=true]{background:#fff0ed;box-shadow:inset 0 -2px #b6402d}
+  .scroll-hint{color:var(--muted);font-size:12px;margin:0 0 8px}
+  .payroll-total{background:var(--ink);border-radius:14px}.pay-card,.backup-card,.roster-item{border-color:var(--line);border-radius:14px}
+  .local-status{font-size:11px;color:var(--muted);margin-top:6px}.local-status.error{color:#a12f23}
+  .conflict{padding:16px;border:1px solid #e1be75;background:#fff8e9;border-radius:12px;margin-bottom:16px;font-size:13px}.conflict p{margin-bottom:12px}
+  .toast{position:fixed;bottom:max(24px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);max-width:calc(100% - 32px);width:max-content;background:#203a31;color:white;border-radius:12px;padding:12px 18px;z-index:100;box-shadow:0 8px 30px #0002;font-size:13px}
+  [hidden]{display:none!important}
+  @media(min-width:761px){.worker,.pin{touch-action:none}}
+  @media(max-width:760px){
+    body{padding:0;background:#fff}.container{padding:20px 16px calc(24px + env(safe-area-inset-bottom));border:0;border-radius:0;box-shadow:none}
+    .app-title{margin-bottom:8px;padding-bottom:16px}.app-title h1{font-size:23px}.app-title p{font-size:12px}
+    .page-tabs{margin:0 -16px 20px;padding:10px 16px;gap:5px}.page-tab{flex:0 0 auto;font-size:13px;padding:10px 13px}
+    .title-row{align-items:stretch;gap:14px}.title-block{width:100%}.actions{width:100%;gap:6px}.actions .btn{flex:1;padding:9px 10px;font-size:12px}
+    .hours-info{gap:7px 12px}.week-ctl{padding:14px}.week-ctl input{font-size:16px!important;min-height:44px}
+    .quick-assign{grid-template-columns:1fr 1fr;gap:10px;padding:12px}.quick-assign select{font-size:16px}.quick-assign .btn{align-self:end}
+    .daygrid{grid-template-columns:1fr;gap:10px}.day{display:grid;grid-template-columns:64px minmax(0,1fr) 56px;align-items:stretch;overflow:visible}
+    .dhead{border:0;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px 0 0 12px}
+    .dbody{min-height:90px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:10px 7px;align-content:center}.dempty{grid-column:1/-1;margin:auto}.pin{font-size:12px;min-height:62px;padding-right:23px}
+    .day-add{margin:8px 6px 8px 0;padding:0;font-size:12px;min-height:44px}.workers{gap:7px}.worker{flex:1 1 120px;padding:8px}
+    .wk-summary{padding:14px}.sum-name{flex-basis:60px}.sum-num{min-width:78px}.wk-stat{min-width:70px}.wk-stat .v{font-size:22px}
+    .roster-item{display:grid;grid-template-columns:38px minmax(0,1fr) 44px;gap:10px;padding:12px}.roster-name{min-width:0;width:100%;font-size:16px}.roster-field{grid-column:2}.roster-wage{width:100%;font-size:16px;min-height:44px}.roster-alw{grid-column:2;min-height:36px}.roster-item .del-btn{grid-column:3;grid-row:1}
+    .month-nav{gap:7px;padding:12px 8px;flex-wrap:wrap}.month-display{min-width:130px;flex:1;font-size:17px}.nav-today{padding:8px 10px}
+    .input-cell{font-size:16px}.pay-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.pay-card{padding:16px}.pay-field input,.ctl-group input[type=number],.add-row input[type=text]{font-size:16px;min-height:44px}
+    .pay-result{flex-wrap:wrap;gap:10px}.payroll-total{padding:16px;gap:10px;flex-wrap:wrap}.payroll-total .amt{font-size:23px}.backup-grid{grid-template-columns:1fr}.bk-summary .line{gap:12px}.bk-summary .line span:last-child{text-align:right;overflow-wrap:anywhere}
+  }
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+}
+@media print{.quick-assign,.day-add,.toast,.local-status,.conflict,.scroll-hint{display:none!important}}
+
 </style>
 </head>
 <body>
-<div class="container">
+<div id="toast" class="toast" role="status" hidden></div>
+<main class="container">
   <div class="app-title">
-    <h1>☕ Cafe Dennis 근무 관리</h1>
+    <h1>Cafe Dennis · 근무 관리</h1>
     <p>주간 배치 · 근무 기록 · 임금 정산을 한곳에서</p>
-    <div class="sync-status off" id="sync-status">⚪ 오프라인 모드</div>
+    <div class="sync-status off" id="sync-status" role="status" aria-live="polite">⚪ 오프라인 모드</div>
   </div>
 
-  <div class="page-tabs">
+  <div id="local-status" class="local-status" role="status"></div>
+  <div id="sync-conflict" class="conflict" hidden><p>다른 기기의 기록과 이 기기의 수정 내용이 겹쳤습니다. 내용을 선택하기 전에 현재 기록을 백업할 수 있습니다.</p><div class="actions"><button class="btn" onclick="exportBackup()">현재 내용 백업</button><button class="btn" onclick="resolveConflict(false)">다른 기기 내용 불러오기</button><button class="btn btn-pri" onclick="resolveConflict(true)">이 기기 내용 유지</button></div></div>
+  <nav class="page-tabs" aria-label="근무 관리 메뉴">
     <button class="page-tab active" id="tab-week" onclick="switchPage('week')">📅 주간 근무표</button>
     <button class="page-tab" id="tab-record" onclick="switchPage('record')">📋 근무 기록표</button>
     <button class="page-tab" id="tab-payroll" onclick="switchPage('payroll')">💰 임금 계산서</button>
     <button class="page-tab" id="tab-roster" onclick="switchPage('roster')">👥 근무자 관리</button>
     <button class="page-tab" id="tab-backup" onclick="switchPage('backup')">💾 백업</button>
-  </div>
+  </nav>
 
   <!-- ===== 백업 ===== -->
   <div id="page-backup" style="display:none">
@@ -302,27 +369,12 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
       <div class="title-row">
         <div class="title-block">
           <h2>데이터 백업 · 복원</h2>
-          <div class="hours-info"><span>브라우저를 닫으면 데이터가 사라지니 작업 후 꼭 백업해 주세요</span></div>
+          <div class="hours-info"><span>이 기기에 자동 저장됩니다. 중요한 기록은 JSON 파일로도 보관해 주세요</span></div>
         </div>
       </div>
     </div>
 
-    <div class="note-box">
-      <strong>⚠️ 중요</strong> &nbsp;Firebase를 설정하면 모든 기기에서 데이터가 자동 동기화돼요. 설정 전에는 <strong>새로고침하면 입력한 내용이 사라지니</strong> 아래 JSON 백업을 이용해 주세요.
-    </div>
-
-    <div class="setup-box" id="setup-box">
-      <h4>☁️ Firebase 연결 설정 (한 번만 하면 됩니다)</h4>
-      설정하면 매장 PC·휴대폰 어디서 열어도 같은 데이터가 보이고, 자동으로 저장돼요.
-      <ol>
-        <li><code>console.firebase.google.com</code> 접속 → <b>프로젝트 추가</b></li>
-        <li>왼쪽 메뉴 <b>빌드 › Realtime Database</b> → <b>데이터베이스 만들기</b> → 위치 선택 → <b>테스트 모드로 시작</b></li>
-        <li>톱니바퀴 <b>프로젝트 설정 › 내 앱</b> → 웹 앱 <code>&lt;/&gt;</code> 추가 → 화면에 뜨는 <code>firebaseConfig</code> 값 복사</li>
-        <li>이 HTML 파일을 편집기로 열어 상단 <code>FIREBASE_CONFIG</code> 안의 값을 붙여넣고 저장 → GitHub에 다시 업로드</li>
-      </ol>
-      <div style="margin-top:8px;font-size:11.5px;color:#8a7040">※ 테스트 모드 보안 규칙은 30일 후 만료돼요. 계속 쓰시려면 그 전에 규칙을 조정해야 하는데, 필요하실 때 도와드릴게요.</div>
-    </div>
-
+    <div class="note-box"><strong>기록 보관 안내</strong> · 이 기기의 자동 저장과 기기 간 동기화 상태를 상단에서 확인하세요. 브라우저 데이터 삭제에 대비해 정기적으로 백업해 주세요.</div>
     <div class="backup-grid">
       <div class="backup-card">
         <div class="bk-icon">💾</div>
@@ -375,7 +427,7 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
     <div class="roster-list" id="roster-list"></div>
 
     <div class="add-row">
-      <input type="text" id="new-name" placeholder="추가할 근무자 이름" onkeydown="if(event.key==='Enter')addWorker()">
+      <input type="text" aria-label="추가할 근무자 이름" maxlength="50" id="new-name" placeholder="추가할 근무자 이름" onkeydown="if(event.key==='Enter')addWorker()">
       <button class="btn btn-pri" onclick="addWorker()">+ 근무자 추가</button>
     </div>
   </div>
@@ -408,10 +460,16 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
     </div>
 
     <div class="tray">
-      <div class="tray-title"><span id="tray-count">근무자 0명</span><span class="tray-hint">이름표를 요일로 드래그 · 배치된 이름표 클릭 → 종일→오전→오후 전환</span></div>
+      <div class="tray-title"><span id="tray-count">근무자 0명</span><span class="tray-hint">간편 등록 또는 PC에서 드래그 · 배치된 이름표를 누르면 근무 유형 변경</span></div>
       <div class="workers" id="workers"></div>
     </div>
 
+    <form class="quick-assign" onsubmit="event.preventDefault();quickAssign()" aria-label="간편 근무 배치">
+      <label>근무자<select id="quick-worker" required></select></label>
+      <label>요일<select id="quick-day"><option value="mon">월요일</option><option value="tue">화요일</option><option value="wed">수요일</option><option value="thu">목요일</option><option value="fri">금요일</option><option value="sat">토요일</option><option value="sun">일요일</option></select></label>
+      <label>근무 유형<select id="quick-shift"><option value="full">종일</option><option value="am">오전</option><option value="pm">오후</option></select></label>
+      <button class="btn btn-pri" type="submit">+ 근무 배치</button>
+    </form>
     <div class="daygrid" id="daygrid"></div>
     <div class="wk-summary" id="wk-summary"></div>
   </div>
@@ -419,12 +477,12 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
   <!-- ===== 근무 기록표 ===== -->
   <div id="page-record" style="display:none">
     <div class="month-nav">
-      <button class="nav-btn" onclick="changeMonth(-1)">←</button>
+      <button class="nav-btn" aria-label="이전 정산월" onclick="changeMonth(-1)">←</button>
       <div class="month-display">
         <span id="month-display-main">-</span>
         <span class="sub" id="month-display-sub">-</span>
       </div>
-      <button class="nav-btn" onclick="changeMonth(1)">→</button>
+      <button class="nav-btn" aria-label="다음 정산월" onclick="changeMonth(1)">→</button>
       <button class="nav-today" onclick="goToToday()">오늘</button>
     </div>
 
@@ -461,12 +519,12 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
   <!-- ===== 임금 계산서 ===== -->
   <div id="page-payroll" style="display:none">
     <div class="month-nav">
-      <button class="nav-btn" onclick="changeMonth(-1)">←</button>
+      <button class="nav-btn" aria-label="이전 정산월" onclick="changeMonth(-1)">←</button>
       <div class="month-display">
         <span id="month-display-main2">-</span>
         <span class="sub" id="month-display-sub2">-</span>
       </div>
-      <button class="nav-btn" onclick="changeMonth(1)">→</button>
+      <button class="nav-btn" aria-label="다음 정산월" onclick="changeMonth(1)">→</button>
       <button class="nav-today" onclick="goToToday()">오늘</button>
     </div>
 
@@ -509,7 +567,7 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
       <span class="amt" id="grand-total">0원</span>
     </div>
   </div>
-</div>
+</main>
 
 <div id="ghost"></div>
 
@@ -659,6 +717,12 @@ function workerWeekDays(id){
 let justDragged=false;
 
 function renderWeek(){
+  const picker=document.getElementById('quick-worker');
+  const previous=picker.value;
+  picker.replaceChildren(...roster.map(w=>new Option(w.name,w.id)));
+  if(roster.some(w=>w.id===previous))picker.value=previous;
+  picker.disabled=!roster.length;
+  document.querySelector('.quick-assign button').disabled=!roster.length;
   document.getElementById('ws').value=weekStart||'';
   document.getElementById('hpd').value=hoursPerDay;
   document.getElementById('tray-count').textContent='근무자 '+roster.length+'명';
@@ -700,17 +764,22 @@ function renderWeek(){
     const body=document.createElement('div');
     body.className='dbody';
     if(empty){
-      body.innerHTML='<div class="dempty">여기로<br>드래그</div>';
+      body.innerHTML='<div class="dempty">배치된 근무자 없음</div>';
     }else{
       assigns.forEach(a=>{
         const w=getWorker(a.id);
         if(!w)return;
         const pin=document.createElement('div');
         pin.className='pin';
+        pin.tabIndex=0;pin.setAttribute('role','button');
+        pin.setAttribute('aria-label',w.name+' '+SHIFT_LABEL_PLAIN[a.shift]+' 근무, 누르면 유형 변경');
+        pin.onkeydown=e=>{if(e.target===pin&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pin.click();}};
         pin.style.background=w.color;
         pin.title='클릭하면 종일→오전→오후 전환';
         pin.innerHTML=esc(w.name)+'<span class="sb '+a.shift+'">'+SHIFT_LABEL[a.shift]+'</span><span class="x">×</span>';
         const x=pin.querySelector('.x');
+        x.tabIndex=0;x.setAttribute('role','button');x.setAttribute('aria-label',w.name+' 배치 삭제');
+        x.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();x.click();}};
         x.addEventListener('pointerdown',e=>e.stopPropagation());
         x.addEventListener('click',e=>{
           e.stopPropagation();
@@ -727,6 +796,10 @@ function renderWeek(){
       });
     }
     card.appendChild(body);
+    const add=document.createElement('button');
+    add.className='day-add';add.textContent='+ 배치';add.setAttribute('aria-label',d.ko+'요일 근무자 배치');
+    add.onclick=()=>{document.getElementById('quick-day').value=d.k;document.querySelector('.quick-assign').scrollIntoView({block:'center'});picker.focus();};
+    card.appendChild(add);
     grid.appendChild(card);
   });
 
@@ -763,6 +836,7 @@ function resetWeek(){
 /* 드래그 앤 드롭 */
 let drag=null,scr={vy:0,raf:null};
 function startDrag(e,wid,fromDay,el){
+  if(e.pointerType==='touch')return;
   if(e.button!==undefined&&e.button!==0)return;
   drag={wid,fromDay,el,started:false,sx:e.clientX,sy:e.clientY};
   document.addEventListener('pointermove',onMove,{passive:false});
@@ -807,7 +881,7 @@ function onUp(e){
     setTimeout(()=>{justDragged=false},50);
     const t=document.elementFromPoint(e.clientX,e.clientY);
     const card=t&&t.closest('.day');
-    if(card){
+    if(card&&e.type!=='pointercancel'){
       const dayK=card.dataset.day;
       const arr=weekAssign[dayK];
       if(!arr.some(a=>a.id===drag.wid)){
@@ -895,20 +969,13 @@ function parseShift(str){
   return(diff>0&&diff<=16)?diff:NaN;
 }
 function parseTime(p){
-  if(!p)return NaN;
-  if(p.indexOf(':')>=0){
-    const seg=p.split(':');
-    const hh=parseInt(seg[0],10),mm=parseInt(seg[1],10)||0;
-    if(isNaN(hh)||hh<0||hh>24||mm<0||mm>=60)return NaN;
-    return hh+mm/60;
-  }
-  if(/^\d{3,4}$/.test(p)){
-    const hh=parseInt(p.slice(0,-2),10),mm=parseInt(p.slice(-2),10);
-    if(hh<0||hh>24||mm<0||mm>=60)return NaN;
-    return hh+mm/60;
-  }
-  const hh=parseInt(p,10);
-  return(isNaN(hh)||hh<0||hh>24)?NaN:hh;
+  if(typeof p!=='string')return NaN;
+  let hh,mm=0;
+  if(/^\d{1,2}:\d{2}$/.test(p)){[hh,mm]=p.split(':').map(Number)}
+  else if(/^\d{3,4}$/.test(p)){hh=Number(p.slice(0,-2));mm=Number(p.slice(-2))}
+  else if(/^\d{1,2}$/.test(p)){hh=Number(p)}
+  else return NaN;
+  return hh<=24&&mm<60&&(hh!==24||mm===0)?hh+mm/60:NaN;
 }
 
 function getRowsFor(y,m){
@@ -978,6 +1045,8 @@ function updateMonthDisplay(){
 
 function saveShift(wid,sy,sm,sIdx,val,rowKey){
   getShiftArr(sy,sm,wid)[sIdx].shift=val;
+  const active=document.activeElement;
+  if(active&&active.matches('.shift-in'))active.setAttribute('aria-invalid',String(!!val.trim()&&isNaN(parseShift(val))));
   const cell=document.getElementById('hr-'+wid+'-'+rowKey);
   if(cell){
     const h=parseShift(val);
@@ -1078,8 +1147,14 @@ function renderTable(){
   });
   foot+='<td></td></tr>';
 
-  wrap.innerHTML='<div class="sheet"><table style="min-width:'+minW+'px"><colgroup>'+cols+'</colgroup>'+
+  wrap.innerHTML='<p class="scroll-hint">표를 좌우로 밀어 모든 근무자와 비고를 확인하세요.</p><div class="sheet" tabindex="0" role="region" aria-label="근무 기록표, 좌우 스크롤"><table style="min-width:'+minW+'px"><colgroup>'+cols+'</colgroup>'+
     '<thead>'+head1+head2+'</thead><tbody>'+body+'</tbody><tfoot>'+foot+'</tfoot></table></div>';
+  wrap.querySelectorAll('.shift-in').forEach(input=>{
+    const w=getWorker(input.dataset.wid),r=periodRows[Number(input.dataset.ri)];
+    input.setAttribute('aria-label',w.name+' '+(r.srcM+1)+'월 '+r.date+'일 근무시간');
+    input.setAttribute('aria-invalid',String(!!input.value.trim()&&isNaN(parseShift(input.value))));
+  });
+  wrap.querySelectorAll('.note-input').forEach((input,i)=>input.setAttribute('aria-label',(periodRows[i].srcM+1)+'월 '+periodRows[i].date+'일 비고'));
   updateSummary();
 }
 
@@ -1378,40 +1453,22 @@ function exportBackup(){
 function importBackup(input){
   const file=input.files&&input.files[0];
   if(!file)return;
-  if(!confirm('백업 파일을 불러오면 현재 입력된 모든 내용이 덮어쓰기 됩니다.\n계속할까요?')){input.value='';return}
+  if(file.size>5*1024*1024){bkMsg('5MB 이하의 백업 파일을 선택해 주세요.',true);input.value='';return}
   const reader=new FileReader();
   reader.onload=function(){
     try{
-      const d=JSON.parse(reader.result);
-      if(!d||!Array.isArray(d.roster))throw new Error('형식이 올바른 백업 파일이 아니에요');
-      roster=d.roster.map(w=>({
-        id:w.id||newId(),name:w.name||'이름없음',color:w.color||'#6661D0',
-        allowance:!!w.allowance,wage:w.wage==null?'':String(w.wage)
-      }));
-      if(typeof d.seq==='number')seq=Math.max(seq,d.seq);
-      Object.keys(monthData).forEach(k=>delete monthData[k]);
-      Object.keys(monthNotes).forEach(k=>delete monthNotes[k]);
-      if(d.monthData)Object.keys(d.monthData).forEach(k=>{monthData[k]=d.monthData[k]});
-      if(d.monthNotes)Object.keys(d.monthNotes).forEach(k=>{monthNotes[k]=d.monthNotes[k]});
-      if(d.weekAssign){
-        WEEK_DAYS.forEach(day=>{
-          weekAssign[day.k]=Array.isArray(d.weekAssign[day.k])?d.weekAssign[day.k]:[];
-        });
-      }
-      if(d.weekStart)weekStart=d.weekStart;
-      if(d.hoursPerDay)hoursPerDay=parseFloat(d.hoursPerDay)||8;
-      if(d.baseWage)document.getElementById('base-wage').value=d.baseWage;
-      refreshAll();
-      const when=d.savedAt?new Date(d.savedAt).toLocaleString('ko-KR'):'알 수 없음';
-      const months=Object.keys(monthData).length;
-      bkMsg('✅ 복원 완료 — 근무자 '+roster.length+'명, 기록 '+months+'개월분 (백업 시점: '+when+')');
+      const d=validateState(JSON.parse(reader.result));
+      if(!confirm('백업 파일의 근무자 '+d.roster.length+'명과 기록으로 현재 내용을 교체할까요?'))return;
+      const acknowledged=lastSig;
+      applyState(d);
+      lastSig=acknowledged;
+      persistLocal();
+      bkMsg('복원 완료 · 근무자 '+roster.length+'명. 동기화 상태를 상단에서 확인하세요.');
       renderBackupSummary();
-    }catch(e){
-      bkMsg('❌ 불러오기에 실패했어요: '+e.message,true);
-    }
-    input.value='';
+    }catch(e){bkMsg('불러오기 실패: '+e.message,true)}
+    finally{input.value=''}
   };
-  reader.onerror=function(){bkMsg('❌ 파일을 읽지 못했어요.',true);input.value=''};
+  reader.onerror=()=>{bkMsg('파일을 읽지 못했어요.',true);input.value=''};
   reader.readAsText(file);
 }
 
@@ -1685,75 +1742,145 @@ function stateSignature(){
   return JSON.stringify({r:roster,w:weekAssign,ws:weekStart,h:hoursPerDay,
     b:document.getElementById('base-wage').value,d:monthData,n:monthNotes});
 }
+function validateState(d){
+  const fail=()=>{throw new Error('백업 데이터 형식이 올바르지 않습니다. 기존 기록은 유지됩니다.')};
+  if(!d||typeof d!=='object'||!Array.isArray(d.roster))fail();
+  if(d.app&&d.app!=='cafe-dennis-schedule')fail();
+  const ids=new Set();
+  d.roster.forEach(w=>{
+    if(!w||!/^w[\w-]+$/.test(w.id)||ids.has(w.id)||typeof w.name!=='string'||!/^#[0-9a-f]{6}$/i.test(w.color))fail();
+    if(w.wage!=null&&w.wage!==''&&(!Number.isFinite(Number(w.wage))||Number(w.wage)<0))fail();
+    ids.add(w.id);
+  });
+  const object=v=>v&&typeof v==='object'&&!Array.isArray(v);
+  for(const [key,value] of Object.entries(d.monthData||{})){
+    if(!/^\d{4}-(?:[0-9]|1[01])$/.test(key)||!object(value))fail();
+    for(const [id,arr] of Object.entries(value)){
+      if(!/^w[\w-]+$/.test(id)||!Array.isArray(arr)||arr.length!==new Date(Number(key.split('-')[0]),Number(key.split('-')[1])+1,0).getDate()||arr.some(c=>!c||typeof c.shift!=='string'))fail();
+    }
+  }
+  for(const [key,arr] of Object.entries(d.monthNotes||{})){
+    if(!/^\d{4}-(?:[0-9]|1[01])$/.test(key)||!Array.isArray(arr)||arr.length!==new Date(Number(key.split('-')[0]),Number(key.split('-')[1])+1,0).getDate()||arr.some(n=>typeof n!=='string'))fail();
+  }
+  if(d.monthData&&!object(d.monthData)||d.monthNotes&&!object(d.monthNotes)||d.weekAssign&&!object(d.weekAssign))fail();
+  WEEK_DAYS.forEach(day=>{
+    const arr=(d.weekAssign||{})[day.k]||[];
+    if(!Array.isArray(arr))fail();
+    const assigned=new Set();
+    arr.forEach(a=>{if(!a||!ids.has(a.id)||!SHIFT_ORDER.includes(a.shift)||assigned.has(a.id))fail();assigned.add(a.id)});
+  });
+  if(d.weekStart&&(!/^\d{4}-\d{2}-\d{2}$/.test(d.weekStart)||isNaN(Date.parse(d.weekStart))))fail();
+  if(d.hoursPerDay!=null&&(!Number.isFinite(Number(d.hoursPerDay))||Number(d.hoursPerDay)<1||Number(d.hoursPerDay)>24))fail();
+  if(d.baseWage!=null&&(!Number.isFinite(Number(d.baseWage))||Number(d.baseWage)<0))fail();
+  return d;
+}
 function applyState(d){
+  validateState(d);
   applyingRemote=true;
   try{
-    if(Array.isArray(d.roster)){
-      roster=d.roster.map(w=>({id:w.id||newId(),name:w.name||'이름없음',color:w.color||'#6661D0',
-        allowance:!!w.allowance,wage:w.wage==null?'':String(w.wage)}));
-    }
-    if(typeof d.seq==='number')seq=Math.max(seq,d.seq);
+    roster=d.roster.map(w=>({...w,allowance:!!w.allowance,wage:w.wage==null?'':String(w.wage)}));
+    seq=Math.max(seq,Number(d.seq)||0,...roster.map(w=>Number(w.id.slice(1))||0));
     Object.keys(monthData).forEach(k=>delete monthData[k]);
     Object.keys(monthNotes).forEach(k=>delete monthNotes[k]);
-    if(d.monthData)Object.keys(d.monthData).forEach(k=>{monthData[k]=d.monthData[k]});
-    if(d.monthNotes)Object.keys(d.monthNotes).forEach(k=>{monthNotes[k]=d.monthNotes[k]});
-    if(d.weekAssign)WEEK_DAYS.forEach(day=>{
-      weekAssign[day.k]=Array.isArray(d.weekAssign[day.k])?d.weekAssign[day.k]:[];
-    });
-    if(d.weekStart)weekStart=d.weekStart;
-    if(d.hoursPerDay)hoursPerDay=parseFloat(d.hoursPerDay)||8;
-    if(d.baseWage)document.getElementById('base-wage').value=d.baseWage;
+    Object.assign(monthData,d.monthData||{});
+    Object.assign(monthNotes,d.monthNotes||{});
+    WEEK_DAYS.forEach(day=>weekAssign[day.k]=(d.weekAssign||{})[day.k]||[]);
+    weekStart=d.weekStart||thisMonday();
+    hoursPerDay=Number(d.hoursPerDay)||8;
+    if(d.baseWage!=null)document.getElementById('base-wage').value=d.baseWage;
     refreshAll();
-  }catch(e){}
-  lastSig=stateSignature();
-  applyingRemote=false;
+    lastSig=stateSignature();
+    localDirty=false;
+    persistLocal();
+  }finally{applyingRemote=false}
+}
+let cloudReady=false,pushing=false,localDirty=false,localSig='',localTimer=null;
+const LOCAL_KEY='cafe-dennis-schedule-v2';
+function persistLocal(){
+  const sig=stateSignature();
+  localDirty=sig!==lastSig;
+  const cacheSignature=sig+'\n'+lastSig;
+  if(cacheSignature===localSig)return;
+  const el=document.getElementById('local-status');
+  try{
+    localStorage.setItem(LOCAL_KEY,JSON.stringify({state:collectState(),acknowledged:lastSig,dirty:localDirty}));
+    localSig=cacheSignature;
+    el.className='local-status';el.textContent='이 기기에 저장됨 · '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){el.className='local-status error';el.textContent='이 기기 저장 실패 · 백업 탭에서 JSON 파일을 저장해 주세요.'}
+}
+function restoreLocal(){
+  try{
+    const raw=localStorage.getItem(LOCAL_KEY);
+    if(!raw)return;
+    const saved=JSON.parse(raw);
+    applyState(validateState(saved.state));
+    if(saved.dirty){lastSig=saved.acknowledged||'';localDirty=true;localSig='';persistLocal()}
+  }catch(e){document.getElementById('local-status').textContent='기기 내 기록을 불러오지 못했습니다. 백업 파일을 확인해 주세요.'}
+}
+function showConflict(){
+  document.getElementById('sync-conflict').hidden=false;
+  setSync('다른 기기와 변경 내용 확인 필요','wait');
+}
+function resolveConflict(keepLocal){
+  if(!pendingRemote)return;
+  const d=pendingRemote;
+  if(!keepLocal&& !confirm('이 기기에서 수정한 내용을 다른 기기의 기록으로 교체할까요? 필요한 내용은 먼저 백업해 주세요.'))return;
+  pendingRemote=null;
+  document.getElementById('sync-conflict').hidden=true;
+  if(keepLocal){persistLocal();pushCloud()}
+  else{applyState(d);setSync('다른 기기 기록을 반영했어요','ok')}
 }
 function pushCloud(){
-  if(!cloudOn||!dbRef)return;
+  if(!cloudOn||!cloudReady||!dbRef||pushing||pendingRemote)return;
+  const sig=stateSignature();
+  pushing=true;setSync('기기 간 동기화 중…','wait');
   dbRef.set({payload:JSON.stringify(collectState()),updatedBy:CLIENT_ID,at:Date.now()})
-    .then(()=>setSync('☁ 저장됨 · 모든 기기 동기화','ok'))
-    .catch(e=>setSync('⚠ 저장 실패: '+e.message,'err'));
+    .then(()=>{lastSig=sig;localSig='';persistLocal();if(!pendingRemote)setSync(localDirty?'추가 변경 저장 대기 중…':'저장됨 · 모든 기기 동기화',localDirty?'wait':'ok')})
+    .catch(()=>setSync('동기화 실패 · 자동 재시도 중','err'))
+    .finally(()=>{pushing=false});
 }
 function tickSync(){
-  if(!cloudOn)return;
-  if(pendingRemote&&!isEditing()){
-    const d=pendingRemote;pendingRemote=null;
-    applyState(d);setSync('☁ 다른 기기의 변경을 반영했어요','ok');
+  persistLocal();
+  if(!cloudOn||!cloudReady||applyingRemote||pushing)return;
+  if(pendingRemote){
+    if(localDirty){showConflict();return}
+    if(!isEditing()){const d=pendingRemote;pendingRemote=null;applyState(d);document.getElementById('sync-conflict').hidden=true;setSync('다른 기기 기록을 반영했어요','ok')}
     return;
   }
-  if(applyingRemote||isEditing())return;
-  const sig=stateSignature();
-  if(sig!==lastSig){lastSig=sig;pushCloud()}
+  if(!isEditing()&&localDirty)pushCloud();
 }
 function initCloud(){
-  const box=document.getElementById('setup-box');
-  if(!isConfigured()){
-    setSync('⚪ 오프라인 모드 · 새로고침 시 데이터 사라짐 (백업 탭 참고)','off');
-    return;
-  }
-  if(typeof firebase==='undefined'){
-    setSync('⚠ Firebase 로드 실패 · 오프라인 모드','err');
-    return;
-  }
+  if(!isConfigured()){setSync('이 기기에서 사용 중 · 클라우드 미연결','off');return}
+  if(typeof firebase==='undefined'){setSync('클라우드 연결 불가 · 기기 저장 상태를 확인하세요','off');return}
   try{
     firebase.initializeApp(FIREBASE_CONFIG);
-    dbRef=firebase.database().ref(DB_PATH);
-    cloudOn=true;
-    if(box)box.style.display='none';
-    setSync('⏳ 연결 중…','wait');
+    dbRef=firebase.database().ref(DB_PATH);cloudOn=true;
+    setSync('기록 불러오는 중…','wait');
     dbRef.on('value',snap=>{
       const v=snap.val();
-      if(!v||!v.payload){lastSig=stateSignature();pushCloud();return}
-      if(v.updatedBy===CLIENT_ID){setSync('☁ 저장됨 · 모든 기기 동기화','ok');return}
-      let d;try{d=JSON.parse(v.payload)}catch(e){return}
-      if(isEditing()){pendingRemote=d;setSync('☁ 다른 기기의 변경 대기 중…','wait');return}
-      applyState(d);
-      setSync('☁ 동기화됨 · '+new Date(v.at||Date.now()).toLocaleTimeString('ko-KR'),'ok');
-    },err=>{cloudOn=false;setSync('⚠ 연결 오류: '+err.message,'err')});
-    setInterval(tickSync,2000);
-  }catch(e){
-    setSync('⚠ 초기화 실패 · 오프라인 모드','err');
-  }
+      if(!v||!v.payload){cloudReady=true;lastSig='';persistLocal();pushCloud();return}
+      if(v.updatedBy===CLIENT_ID)return;
+      let d;
+      try{d=validateState(JSON.parse(v.payload))}catch(e){setSync('클라우드 데이터 확인 필요 · 기존 기록 유지','err');return}
+      cloudReady=true;persistLocal();
+      if(localDirty||isEditing()){pendingRemote=d;if(localDirty)showConflict();else setSync('다른 기기 변경 대기 중…','wait');return}
+      applyState(d);setSync('동기화됨 · '+new Date(v.at||Date.now()).toLocaleTimeString('ko-KR'),'ok');
+    },()=>{cloudOn=false;setSync('클라우드 연결 오류 · 기기 저장 상태를 확인하세요','err')});
+  }catch(e){setSync('클라우드 연결 불가 · 기기 저장 상태를 확인하세요','err')}
+}
+let toastTimer;
+function notifyUser(message){
+  const el=document.getElementById('toast');el.textContent=message;el.hidden=false;
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.hidden=true,2800);
+}
+function quickAssign(){
+  const id=document.getElementById('quick-worker').value;
+  const day=document.getElementById('quick-day').value;
+  const shift=document.getElementById('quick-shift').value;
+  if(!getWorker(id))return;
+  const existing=weekAssign[day].find(a=>a.id===id);
+  if(existing)existing.shift=shift;else weekAssign[day].push({id,shift});
+  renderWeek();persistLocal();notifyUser('근무 배치를 저장했어요.');
 }
 
 /* ============ 페이지 전환 ============ */
@@ -1762,9 +1889,11 @@ function switchPage(name){
     document.getElementById('page-'+p).style.display=p===name?'block':'none';
     document.getElementById('tab-'+p).className='page-tab'+(p===name?' active':'');
   });
-  if(name==='payroll')updatePayroll();
+  if(name==='payroll'){renderPayCards();updatePayroll();}
   if(name==='roster')renderRoster();
   if(name==='backup')renderBackupSummary();
+  document.querySelectorAll('.page-tab').forEach(t=>{if(t.id==='tab-'+name)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current')});
+  document.getElementById('tab-'+name).scrollIntoView({block:'nearest',inline:'nearest'});
 }
 
 /* 초기화 */
@@ -1774,6 +1903,16 @@ updateMonthDisplay();
 renderTable();
 renderPayCards();
 updatePayroll();
+lastSig=stateSignature();
+restoreLocal();
+persistLocal();
+document.getElementById('tab-week').setAttribute('aria-current','page');
+['input','change','click'].forEach(type=>document.addEventListener(type,()=>{
+  clearTimeout(localTimer);localTimer=setTimeout(persistLocal,0);
+}));
+window.addEventListener('pagehide',persistLocal);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')persistLocal()});
+setInterval(tickSync,2000);
 initCloud();
 </script>
 </body>
