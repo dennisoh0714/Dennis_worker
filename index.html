@@ -8,6 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <style>
 .sync-status{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;padding:5px 12px;border-radius:14px;margin-top:8px}
 .sync-status.ok{background:#E1F5EE;color:#085041}
@@ -1771,6 +1772,7 @@ const DB_PATH='cafeDennis/schedule';
 
 const CLIENT_ID=Math.random().toString(36).slice(2,10);
 let dbRef=null,cloudOn=false,lastSig='',applyingRemote=false,pendingRemote=null;
+let authUser=null;
 
 function isConfigured(){
   return FIREBASE_CONFIG.databaseURL&&FIREBASE_CONFIG.databaseURL.indexOf('여기에')<0&&
@@ -1895,13 +1897,9 @@ function tickSync(){
   }
   if(!isEditing()&&localDirty)pushCloud();
 }
-function initCloud(){
-  if(!isConfigured()){setSync('이 기기에서 사용 중 · 클라우드 미연결','off');return}
-  if(typeof firebase==='undefined'){setSync('클라우드 연결 불가 · 기기 저장 상태를 확인하세요','off');return}
-  try{
-    firebase.initializeApp(FIREBASE_CONFIG);
-    dbRef=firebase.database().ref(DB_PATH);cloudOn=true;
-    setSync('기록 불러오는 중…','wait');
+function startDatabaseSync(){
+  dbRef=firebase.database().ref(DB_PATH);cloudOn=true;
+  setSync('기록 불러오는 중…','wait');
     dbRef.on('value',snap=>{
       const v=snap.val();
       if(!v||!v.payload){cloudReady=true;lastSig='';persistLocal();pushCloud();return}
@@ -1912,7 +1910,30 @@ function initCloud(){
       if(localDirty||isEditing()){pendingRemote=d;if(localDirty)showConflict();else setSync('다른 기기 변경 대기 중…','wait');return}
       applyState(d);setSync('동기화됨 · '+new Date(v.at||Date.now()).toLocaleTimeString('ko-KR'),'ok');
     },()=>{cloudOn=false;setSync('클라우드 연결 오류 · 기기 저장 상태를 확인하세요','err')});
-  }catch(e){setSync('클라우드 연결 불가 · 기기 저장 상태를 확인하세요','err')}
+}
+function initCloud(){
+  if(!isConfigured()){setSync('이 기기에서 사용 중 · 클라우드 미연결','off');return}
+  if(typeof firebase==='undefined'){setSync('클라우드 연결 불가 · 기기 저장 상태를 확인하세요','off');return}
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const provider=new firebase.auth.GoogleAuthProvider();
+    firebase.auth().onAuthStateChanged(user=>{
+      if(user){
+        authUser=user;
+        startDatabaseSync();
+        console.info('Firebase UID:',user.uid);
+        return;
+      }
+      setSync('Google 로그인 필요 · 로그인 창을 확인하세요','wait');
+      firebase.auth().signInWithPopup(provider).catch(err=>{
+        console.error('Google 로그인 실패',err);
+        setSync('Google 로그인 필요 · 팝업 차단 여부를 확인하세요','err');
+      });
+    });
+  }catch(e){
+    console.error(e);
+    setSync('클라우드 연결 불가 · 기기 저장 상태를 확인하세요','err');
+  }
 }
 let toastTimer;
 function notifyUser(message){
