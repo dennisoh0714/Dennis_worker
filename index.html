@@ -377,6 +377,7 @@ tfoot .total-val{font-weight:600;font-variant-numeric:tabular-nums}
     <h1>Cafe Dennis · 근무 관리</h1>
     <p>주간 배치 · 근무 기록 · 임금 정산을 한곳에서</p>
     <div class="sync-status off" id="sync-status" role="status" aria-live="polite">⚪ 오프라인 모드</div>
+    <button type="button" id="google-login-button" onclick="loginWithGoogle()" hidden style="margin-top:12px;padding:11px 20px;border:0;border-radius:10px;background:#1f493d;color:white;font-size:15px;font-weight:700;cursor:pointer">Google로 로그인</button>
   </div>
 
   <div id="local-status" class="local-status" role="status"></div>
@@ -1911,25 +1912,47 @@ function startDatabaseSync(){
       applyState(d);setSync('동기화됨 · '+new Date(v.at||Date.now()).toLocaleTimeString('ko-KR'),'ok');
     },()=>{cloudOn=false;setSync('클라우드 연결 오류 · 기기 저장 상태를 확인하세요','err')});
 }
+async function loginWithGoogle(){
+  const button=document.getElementById('google-login-button');
+  if(button){button.disabled=true;button.textContent='로그인 진행 중…';}
+  try{
+    if(typeof firebase==='undefined'||!firebase.apps.length)throw new Error('Firebase 연결을 확인해주세요.');
+    const provider=new firebase.auth.GoogleAuthProvider();
+    await firebase.auth().signInWithPopup(provider);
+  }catch(err){
+    console.error('Google 로그인 실패',err);
+    const code=err.code||'';
+    const message=code==='auth/popup-blocked'?'팝업이 차단됐습니다. 브라우저 팝업 허용 후 다시 눌러주세요':
+      code==='auth/unauthorized-domain'?'Firebase Authentication에서 현재 사이트 도메인을 승인해야 합니다':
+      code==='auth/popup-closed-by-user'?'로그인 창이 닫혔습니다. 버튼을 눌러 다시 시도하세요':
+      'Google 로그인 오류 ('+(code||err.message)+')';
+    setSync(message,'err');
+  }finally{
+    if(button){button.disabled=false;button.textContent='Google로 로그인';}
+  }
+}
 function initCloud(){
   if(!isConfigured()){setSync('이 기기에서 사용 중 · 클라우드 미연결','off');return}
   if(typeof firebase==='undefined'){setSync('클라우드 연결 불가 · 기기 저장 상태를 확인하세요','off');return}
   try{
     firebase.initializeApp(FIREBASE_CONFIG);
-    const provider=new firebase.auth.GoogleAuthProvider();
     firebase.auth().onAuthStateChanged(user=>{
+      const button=document.getElementById('google-login-button');
       if(user){
+        if(authUser && authUser.uid===user.uid)return;
         authUser=user;
+        if(button)button.hidden=true;
+        if(dbRef)dbRef.off();
         startDatabaseSync();
         console.info('Firebase UID:',user.uid);
         return;
       }
-      setSync('Google 로그인 필요 · 로그인 창을 확인하세요','wait');
-      firebase.auth().signInWithPopup(provider).catch(err=>{
-        console.error('Google 로그인 실패',err);
-        setSync('Google 로그인 필요 · 팝업 차단 여부를 확인하세요','err');
-      });
-    });
+      authUser=null;
+      if(dbRef)dbRef.off();
+      dbRef=null;cloudOn=false;
+      if(button)button.hidden=false;
+      setSync('Google 로그인이 필요합니다 · 아래 버튼을 눌러주세요','wait');
+    },err=>{console.error('인증 상태 확인 실패',err);setSync('Google 인증 오류 · 다시 시도하세요','err')});
   }catch(e){
     console.error(e);
     setSync('클라우드 연결 불가 · 기기 저장 상태를 확인하세요','err');
